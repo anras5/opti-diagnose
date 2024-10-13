@@ -1,0 +1,9 @@
+[project]
+name = "opti-diagnose-backend"
+version = "0.1.0"
+description = "Backend app for the opti-diagnose project"
+requires-python = ">=3.12"
+dependencies = [
+    "django-rest-framework>=0.1.0",
+    "django>=5.1.2",
+]
