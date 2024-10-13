@@ -8,3 +8,17 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/optidiagnose:/app/optidiagnose
+
+  postgres:
+    container_name: opti-diagnose-postgres
+    image: postgres:15.0
+    ports:
+      - "54320:5432"
+    volumes:
+      - ./databases/postgres_data:/var/lib/postgresql/data
+    env_file: .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
