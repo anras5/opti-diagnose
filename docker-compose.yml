@@ -1,0 +1,10 @@
+services:
+  api:
+    container_name: opti-diagnose-api
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/optidiagnose:/app/optidiagnose
