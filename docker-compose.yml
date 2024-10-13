@@ -1,4 +1,5 @@
 services:
+
   api:
     container_name: opti-diagnose-api
     build:
@@ -8,6 +9,10 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/optidiagnose:/app/optidiagnose
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postgres:
     container_name: opti-diagnose-postgres
