@@ -1,1 +1,27 @@
 # Opti Diagnose
+
+1. Create `.env` file in the root directory and add the following environment variables:
+
+```
+DEBUG=True
+SECRET_KEY='abcdefghijklmnopqrstuvwxyz1234567890'
+ALLOWED_HOSTS=*
+DATABASE_URL=postgres://postgres:secretpassword@postgres:5432/optidiagnosedb
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=secretpassword
+POSTGRES_DB=optidiagnosedb
+```
+
+2. Run using Docker Compose:
+
+```
+docker compose up
+```
+
+3. To apply migrations, run:
+
+```
+docker exec -it opti-diagnose-api uv run optidiagnose/manage.py makemigrations
+docker exec -it opti-diagnose-api uv run optidiagnose/manage.py migrate
+```
