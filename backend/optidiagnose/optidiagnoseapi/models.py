@@ -23,8 +23,8 @@ class Patient(UUIDModel):
     lastname = models.CharField(max_length=255, help_text="Last name of the patient")
     birthdate = models.DateField(help_text="Birthdate of the patient")
     national_id = models.CharField(max_length=255, help_text="National ID of the patient")
-    phone = models.CharField(max_length=20, help_text="Phone number of the patient")
-    email = models.CharField(max_length=255, help_text="Email of the patient")
+    phone = models.CharField(max_length=20, blank=True, null=True, help_text="Phone number of the patient")
+    email = models.CharField(max_length=255, blank=True, null=True, help_text="Email of the patient")
 
 
 class Examination(UUIDModel):
@@ -34,7 +34,7 @@ class Examination(UUIDModel):
         choices=Diagnosis.choices,
         help_text="Diagnosis of the examination",
     )
-    notes = models.TextField(help_text="Notes for the examination")
+    notes = models.TextField(blank=True, null=True, help_text="Notes for the examination")
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="Patient of the examination")
 
 
