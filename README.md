@@ -1,5 +1,6 @@
 # Opti Diagnose
 
+## Running the project
 1. Create `.env` file in the root directory and add the following environment variables:
 
 ```
@@ -19,9 +20,21 @@ POSTGRES_DB=optidiagnosedb
 docker compose up
 ```
 
-3. To apply migrations, run:
+# Backend
 
 ```
-docker exec -it opti-diagnose-api uv run optidiagnose/manage.py makemigrations
-docker exec -it opti-diagnose-api uv run optidiagnose/manage.py migrate
+cd backend
+```
+
+## Migrations
+To apply migrations, run:
+
+```
+docker exec opti-diagnose-api uv run optidiagnose/manage.py makemigrations
+docker exec opti-diagnose-api uv run optidiagnose/manage.py migrate
+```
+
+## Formatting
+```
+docker exec opti-diagnose-api uv tool run ruff format
 ```
