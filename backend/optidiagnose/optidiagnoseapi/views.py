@@ -1,7 +1,19 @@
+from django.contrib.auth.models import User
 from rest_framework import generics
 
 from .models import Patient, Examination, Scan, NetworkDiagnosis
-from .serializers import PatientSerializer, ExaminationSerializer, ScanSerializer, NetworkDiagnosisSerializer
+from .serializers import (
+    PatientSerializer,
+    ExaminationSerializer,
+    ScanSerializer,
+    NetworkDiagnosisSerializer,
+    UserSerializer,
+)
+
+
+class UserCreate(generics.CreateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
 class PatientListCreate(generics.ListCreateAPIView):
