@@ -1,0 +1,29 @@
+services:
+
+  api:
+    container_name: opti-diagnose-api
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/optidiagnose:/app/optidiagnose
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: opti-diagnose-postgres
+    image: postgres:15.0
+    ports:
+      - "54320:5432"
+    volumes:
+      - ./databases/postgres_data:/var/lib/postgresql/data
+    env_file: .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
