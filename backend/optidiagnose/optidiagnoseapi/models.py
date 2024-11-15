@@ -38,13 +38,13 @@ class Examination(UUIDModel):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="Patient of the examination")
 
 
-class Scan(UUIDModel):
-    class FileType(models.TextChoices):
-        JPG = "JPG", "JPG"
-        PNG = "PNG", "PNG"
-        OCT = "OCT", "OCT"
+def upload_to(instance, filename):
+    """Custom path for uploaded files: uploads/<examination_pk>/<filename>"""
+    return f"{instance.examination.id}/{filename}"
 
-    photo = models.CharField(max_length=500, help_text="Path to the scan file")
+
+class Scan(UUIDModel):
+    photo = models.FileField(upload_to=upload_to, help_text="Path to the scan file")
     examination = models.ForeignKey(Examination, on_delete=models.CASCADE, help_text="Examination of the scan")
 
 
