@@ -9,6 +9,7 @@ dependencies = [
     "django-rest-framework>=0.1.0",
     "django>=5.1.2",
     "djangorestframework-simplejwt>=5.3.1",
+    "drf-spectacular>=0.27.2",
     "psycopg[binary]>=3.2.3",
 ]
 
