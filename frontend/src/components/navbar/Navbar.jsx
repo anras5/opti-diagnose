@@ -1,7 +1,8 @@
 import {LuAlignJustify, LuX} from "react-icons/lu";
-import {Box, Collapsible, Flex, IconButton, Link, Stack, Text,} from '@chakra-ui/react';
+import {Box, Collapsible, Flex, IconButton, Link, Link as ChakraLink, Stack, Text,} from '@chakra-ui/react';
 import {ColorModeButton, useColorModeValue} from "./../ui/color-mode.jsx";
 import {useState} from "react";
+import {Link as ReactRouterLink} from 'react-router';
 
 export default function Navbar() {
 
@@ -73,7 +74,9 @@ const DesktopNav = () => {
         <Stack direction={'row'} spacing={4}>
             {NAV_ITEMS.map((navItem) => (
                 <Box key={navItem.label}>
-                    <Link
+                    <ChakraLink
+                        as={ReactRouterLink}
+                        to={navItem.href}
                         p={3}
                         fontSize={'md'}
                         fontWeight={700}
@@ -82,7 +85,7 @@ const DesktopNav = () => {
                         }}
                     >
                         {navItem.label}
-                    </Link>
+                    </ChakraLink>
                 </Box>
             ))}
         </Stack>

@@ -1,8 +1,11 @@
 import {Heading, Stack, Text} from "@chakra-ui/react";
 import {useColorModeValue} from "../ui/color-mode.jsx";
 import {Button} from "../ui/button.jsx";
+import {useNavigate} from "react-router";
 
 const Home = () => {
+
+    const navigate = useNavigate();
 
     return (
         <Stack
@@ -15,7 +18,7 @@ const Home = () => {
                 fontWeight={600}
                 fontSize={{base: '3xl', sm: '4xl', md: '6xl'}}
                 lineHeight={'110%'}
-                color={useColorModeValue('teal.600', 'white')}
+                color={useColorModeValue('teal.600', 'teal.400')}
                 py={3}
             >
                 Opti Diagnose
@@ -32,7 +35,7 @@ const Home = () => {
                 <Button
                     px={6}
                     colorPalette={"teal"}
-                    // onClick={() => navigate("/signup")}
+                    onClick={() => navigate("/login")}
                 >
                     Log in
                 </Button>

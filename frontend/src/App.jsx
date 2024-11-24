@@ -1,7 +1,7 @@
 import Navbar from "./components/navbar/Navbar.jsx";
-import Home from "./components/home/Home.jsx";
 import {useColorModeValue} from "./components/ui/color-mode.jsx";
 import {Box} from "@chakra-ui/react";
+import {Outlet} from "react-router";
 
 
 const App = () => {
@@ -11,7 +11,7 @@ const App = () => {
             minH={'100vh'}
         >
             <Navbar/>
-            <Home/>
+            <Outlet/>
         </Box>
     )
 }
