@@ -59,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = "optidiagnose.urls"
@@ -144,3 +145,6 @@ SPECTACULAR_SETTINGS = {
     'SERVE_URLCONF': 'optidiagnose.urls',
     'SCHEMA_PATH_PREFIX': r'/api/',
 }
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True

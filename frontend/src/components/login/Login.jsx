@@ -5,18 +5,40 @@ import {useFormik} from "formik";
 import {useColorModeValue} from "../ui/color-mode.jsx";
 import {useNavigate} from "react-router";
 import {PasswordInput} from "../ui/password-input.jsx";
+import {toaster} from "../ui/toaster.jsx"
 
 const Login = () => {
 
     const formik = useFormik({
         initialValues: {email: "", password: ""},
         validationSchema: Yup.object({
-            email: Yup.string().required("Email required!").email("Email should be valid!"),
+            username: Yup.string().required("Username required!"),
             password: Yup.string().required("Password required!")
-                .min(6, "Password too short!").max(28, "Password too long!"),
         }),
         onSubmit: (values, actions) => {
-            console.log(values);
+            fetch("http://localhost:8080/api/token/", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(values)
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                toaster.create({
+                    title: "Invalid credentials!",
+                    description: "Please try again!",
+                    type: "error"
+                })
+
+            }).then(data => {
+                localStorage.setItem("access", data.access);
+                localStorage.setItem("refresh", data.refresh);
+                actions.resetForm();
+                navigate("/patients");
+            }).catch(error => {
+                alert(error.message);
+            })
+
             actions.resetForm();
         }
     });
@@ -42,9 +64,9 @@ const Login = () => {
                     Log in
                 </Heading>
 
-                <Field label={"Email"} errorText={formik.errors.email}
-                       invalid={formik.touched.email && formik.errors.email}>
-                    <Input placeholder="Enter your email" {...formik.getFieldProps("email")} />
+                <Field label={"Username"} errorText={formik.errors.username}
+                       invalid={formik.touched.username && formik.errors.username}>
+                    <Input placeholder="Enter your username" {...formik.getFieldProps("username")} />
                 </Field>
                 <Field label={"Password"} errorText={formik.errors.password}
                        invalid={formik.touched.password && formik.errors.password}>

@@ -5,6 +5,7 @@ import App from './App.jsx'
 import {BrowserRouter, Route, Routes} from "react-router";
 import Home from "./components/home/Home.jsx";
 import Login from "./components/login/Login.jsx";
+import Patients from "./components/patients/Patients.jsx";
 
 
 createRoot(document.getElementById('root')).render(
@@ -15,8 +16,8 @@ createRoot(document.getElementById('root')).render(
                     <Route path={"/"} element={<App/>}>
                         <Route index element={<Home/>}/>
                         <Route path={"login"} element={<Login/>}/>
+                        <Route path={"patients"} element={<Patients/>}/>
                     </Route>
-
                 </Routes>
             </Provider>
         </BrowserRouter>
