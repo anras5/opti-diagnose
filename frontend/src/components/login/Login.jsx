@@ -52,7 +52,7 @@ const Login = () => {
                 mt={20}
                 borderRadius={8}
                 w={{base: "90%", md: "500px"}}
-                bgColor={useColorModeValue("gray.50", "gray.900")}
+                bgColor={useColorModeValue("gray.50", "gray.950")}
                 onSubmit={formik.handleSubmit}
             >
                 <Heading

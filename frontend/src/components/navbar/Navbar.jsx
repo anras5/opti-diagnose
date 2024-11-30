@@ -15,7 +15,7 @@ export default function Navbar() {
         <Box>
             <Collapsible.Root>
                 <Flex
-                    bg={useColorModeValue('gray.100', 'gray.800')}
+                    bg={useColorModeValue('gray.100', 'gray.900')}
                     py={{base: 2}}
                     px={{base: 4}}
                     align={'center'}

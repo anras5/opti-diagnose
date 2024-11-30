@@ -9,7 +9,7 @@ const App = () => {
     return (
         <AuthProvider>
             <Box
-                bgColor={useColorModeValue('gray.100', 'gray.800')}
+                bgColor={useColorModeValue('gray.100', 'gray.900')}
                 minH={'100vh'}
             >
                 <Navbar/>
