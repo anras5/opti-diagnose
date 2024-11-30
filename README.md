@@ -20,6 +20,11 @@ POSTGRES_DB=optidiagnosedb
 docker compose up
 ```
 
+Runs:
+- frontend on `5173`
+- backend on `8080`
+- postgres on `54320`
+
 # Backend
 
 ```

@@ -1,5 +1,17 @@
 services:
 
+  frontend:
+    container_name: opti-diagnose-frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    env_file: .env
+
   api:
     container_name: opti-diagnose-api
     build:
