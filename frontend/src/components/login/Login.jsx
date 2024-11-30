@@ -5,12 +5,13 @@ import {useFormik} from "formik";
 import {useColorModeValue} from "../ui/color-mode.jsx";
 import {useNavigate} from "react-router";
 import {PasswordInput} from "../ui/password-input.jsx";
-import {toaster} from "../ui/toaster.jsx"
+import {toaster} from "../ui/toaster.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const Login = () => {
-
+    const {login} = useAuth();
     const formik = useFormik({
-        initialValues: {email: "", password: ""},
+        initialValues: {username: "", password: ""},
         validationSchema: Yup.object({
             username: Yup.string().required("Username required!"),
             password: Yup.string().required("Password required!")
@@ -25,18 +26,15 @@ const Login = () => {
                     return response.json();
                 }
                 toaster.create({
-                    title: "Invalid credentials!",
-                    description: "Please try again!",
+                    description: "Invalid credentials!",
                     type: "error"
-                })
-
+                });
+                throw new Error("Invalid credentials!");
             }).then(data => {
-                localStorage.setItem("access", data.access);
-                localStorage.setItem("refresh", data.refresh);
+                login(data.access, data.refresh);
                 actions.resetForm();
-                navigate("/patients");
             }).catch(error => {
-                alert(error.message);
+                console.log(error.message);
             })
 
             actions.resetForm();

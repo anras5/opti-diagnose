@@ -2,11 +2,14 @@ import {LuAlignJustify, LuX} from "react-icons/lu";
 import {Box, Collapsible, Flex, IconButton, Link, Link as ChakraLink, Stack, Text,} from '@chakra-ui/react';
 import {ColorModeButton, useColorModeValue} from "./../ui/color-mode.jsx";
 import {useState} from "react";
-import {Link as ReactRouterLink} from 'react-router';
+import {Link as ReactRouterLink, useNavigate} from 'react-router';
+import {Button} from "../ui/button.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 export default function Navbar() {
-
     const [isOpen, setIsOpen] = useState(false);
+    const {isLoggedIn, logout} = useAuth();
+    const navigate = useNavigate();
 
     return (
         <Box>
@@ -51,13 +54,30 @@ export default function Navbar() {
                         flex={{base: 1, md: 0}}
                         justify={'flex-end'}
                         direction={'row'}
-                        spacing={{base: 2, lg: 3, xl: 4}}
+                        gap={{base: 2, lg: 3, xl: 6}}
                     >
                         <ColorModeButton
                             _hover={{
                                 bgColor: 'transparent',
                             }}
                         />
+                        {isLoggedIn === null ?
+                            <></> :
+                            isLoggedIn ?
+                            <Button
+                                colorPalette={'red'}
+                                onClick={logout}
+                            >
+                                Log out
+                            </Button> :
+                            <Button
+                                colorPalette={'teal'}
+                                onClick={() => navigate("/login")}
+                            >
+                                Log in
+                            </Button>
+                        }
+
                     </Stack>
                 </Flex>
                 <Collapsible.Content>
@@ -69,7 +89,6 @@ export default function Navbar() {
 }
 
 const DesktopNav = () => {
-
     return (
         <Stack direction={'row'} spacing={4}>
             {NAV_ITEMS.map((navItem) => (
@@ -105,7 +124,6 @@ const MobileNav = () => {
 };
 
 const MobileNavItem = ({label, href}) => {
-
     return (
         <Stack spacing={4}>
             <Flex
