@@ -64,18 +64,18 @@ export default function Navbar() {
                         {isLoggedIn === null ?
                             <></> :
                             isLoggedIn ?
-                            <Button
-                                colorPalette={'red'}
-                                onClick={logout}
-                            >
-                                Log out
-                            </Button> :
-                            <Button
-                                colorPalette={'teal'}
-                                onClick={() => navigate("/login")}
-                            >
-                                Log in
-                            </Button>
+                                <Button
+                                    colorPalette={'red'}
+                                    onClick={logout}
+                                >
+                                    Log out
+                                </Button> :
+                                <Button
+                                    colorPalette={'teal'}
+                                    onClick={() => navigate("/login")}
+                                >
+                                    Log in
+                                </Button>
                         }
 
                     </Stack>

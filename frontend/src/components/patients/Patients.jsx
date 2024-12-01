@@ -1,12 +1,8 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {Heading, HStack, Table, VStack} from "@chakra-ui/react";
-import {
-    PaginationNextTrigger,
-    PaginationPageText,
-    PaginationPrevTrigger,
-    PaginationRoot
-} from "../ui/pagination.jsx";
+import {Heading, HStack, IconButton, Table, VStack} from "@chakra-ui/react";
+import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
+import {LuFileEdit, LuTrash2, LuUser} from "react-icons/lu";
 
 const Patients = () => {
 
@@ -51,15 +47,14 @@ const Patients = () => {
                     setPage(details.page);
                 }}
             >
-                <HStack wrap="wrap">
+                <HStack gap={4}>
                     <PaginationPrevTrigger/>
-                    <PaginationPageText />
+                    <PaginationPageText/>
                     <PaginationNextTrigger/>
                 </HStack>
             </PaginationRoot>
             <Table.Root
                 colorPalette={"teal"}
-                interactive
                 variant={"outline"}
                 borderRadius={8}
                 showColumnBorder
@@ -80,7 +75,19 @@ const Patients = () => {
                             <Table.Cell>{patient.lastname}</Table.Cell>
                             <Table.Cell>{patient.email}</Table.Cell>
                             <Table.Cell>{patient.birthdate}</Table.Cell>
-                            <Table.Cell></Table.Cell>
+                            <Table.Cell maxW={"100px"}>
+                                <HStack>
+                                    <IconButton colorPalette={"blue"} size={"xs"} variant={'outline'}>
+                                        <LuUser/>
+                                    </IconButton>
+                                    <IconButton colorPalette={"yellow"} size={"xs"} variant={'outline'}>
+                                        <LuFileEdit/>
+                                    </IconButton>
+                                    <IconButton colorPalette={"red"} size={"xs"} variant={"outline"}>
+                                        <LuTrash2 />
+                                    </IconButton>
+                                </HStack>
+                            </Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>
