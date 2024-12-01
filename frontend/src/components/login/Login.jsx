@@ -72,8 +72,8 @@ const Login = () => {
                 </Field>
 
                 <HStack pt={"1rem"}>
-                    <Button colorPalette={"teal"} type={"submit"}>Log In</Button>
                     <Button onClick={() => navigate("/")} variant={'outline'}>Back</Button>
+                    <Button colorPalette={"teal"} type={"submit"}>Log In</Button>
                 </HStack>
             </VStack>
         </>

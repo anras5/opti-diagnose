@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {Heading, HStack, IconButton, Table, Text, VStack} from "@chakra-ui/react";
+import {Box, Center, Heading, HStack, IconButton, SimpleGrid, Table, Text, VStack} from "@chakra-ui/react";
 import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
-import {LuFileEdit, LuTrash2, LuUser} from "react-icons/lu";
+import {LuFileEdit, LuTrash2, LuUser, LuUserPlus} from "react-icons/lu";
 import {useNavigate} from "react-router";
 import {
     DialogActionTrigger,
@@ -77,20 +77,36 @@ const Patients = () => {
         >
             <Heading size={{base: '2xl', md: '6xl'}} mb={5}>Patients</Heading>
 
-            <PaginationRoot
-                count={patients.length}
-                pageSize={pageSize}
-                page={page}
-                onPageChange={(details) => {
-                    setPage(details.page);
-                }}
-            >
-                <HStack gap={4}>
-                    <PaginationPrevTrigger/>
-                    <PaginationPageText/>
-                    <PaginationNextTrigger/>
-                </HStack>
-            </PaginationRoot>
+            <SimpleGrid columns={3} width={"100%"}>
+                <Box></Box>
+                <Center>
+                    <PaginationRoot
+                        count={patients.length}
+                        pageSize={pageSize}
+                        page={page}
+                        onPageChange={(details) => {
+                            setPage(details.page);
+                        }}
+                    >
+                        <HStack gap={4}>
+                            <PaginationPrevTrigger/>
+                            <PaginationPageText/>
+                            <PaginationNextTrigger/>
+                        </HStack>
+                    </PaginationRoot>
+                </Center>
+                <Button
+                    ms={"auto"}
+                    colorPalette={"teal"}
+                    variant={"outline"}
+                    onClick={() => {
+                        navigate("/patients/new");
+                    }}
+                >
+                    <LuUserPlus /> New Patient
+                </Button>
+            </SimpleGrid>
+
             <Table.Root
                 colorPalette={"teal"}
                 variant={"outline"}
