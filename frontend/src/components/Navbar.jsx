@@ -1,10 +1,10 @@
 import {LuAlignJustify, LuX} from "react-icons/lu";
 import {Box, Collapsible, Flex, IconButton, Link, Link as ChakraLink, Stack, Text,} from '@chakra-ui/react';
-import {ColorModeButton, useColorModeValue} from "./../ui/color-mode.jsx";
+import {ColorModeButton, useColorModeValue} from "./ui/color-mode.jsx";
 import {useState} from "react";
 import {Link as ReactRouterLink, useNavigate} from 'react-router';
-import {Button} from "../ui/button.jsx";
-import {useAuth} from "../../context/AuthContext.jsx";
+import {Button} from "./ui/button.jsx";
+import {useAuth} from "../context/AuthContext.jsx";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -67,6 +67,7 @@ export default function Navbar() {
                                 <Button
                                     colorPalette={'red'}
                                     onClick={logout}
+                                    variant={'outline'}
                                 >
                                     Log out
                                 </Button> :

@@ -1,4 +1,4 @@
-import Navbar from "./components/navbar/Navbar.jsx";
+import Navbar from "./components/Navbar.jsx";
 import {useColorModeValue} from "./components/ui/color-mode.jsx";
 import {Box} from "@chakra-ui/react";
 import {Outlet} from "react-router";
