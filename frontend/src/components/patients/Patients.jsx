@@ -142,7 +142,11 @@ const Patients = () => {
                                     </IconButton>
 
                                     {/* edit patient */}
-                                    <IconButton colorPalette={"orange"} size={"xs"} variant={'outline'}>
+                                    <IconButton colorPalette={"orange"} size={"xs"} variant={'outline'}
+                                        onClick={() => {
+                                            navigate(`/patients/${patient.id}/edit`);
+                                        }}
+                                    >
                                         <LuFileEdit/>
                                     </IconButton>
 
