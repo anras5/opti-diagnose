@@ -7,6 +7,7 @@ import Home from "./components/home/Home.jsx";
 import Login from "./components/login/Login.jsx";
 import Patients from "./components/patients/Patients.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Examinations from "./components/examinations/Examinations.jsx";
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -19,6 +20,11 @@ createRoot(document.getElementById('root')).render(
                         <Route path={"patients"} element={
                             <ProtectedRoute>
                                 <Patients/>
+                            </ProtectedRoute>
+                        }/>
+                        <Route path={"patients/:id/examinations"} element={
+                            <ProtectedRoute>
+                                <Examinations/>
                             </ProtectedRoute>
                         }/>
                     </Route>
