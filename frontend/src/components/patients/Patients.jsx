@@ -1,17 +1,34 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {Heading, HStack, IconButton, Table, VStack} from "@chakra-ui/react";
+import {Heading, HStack, IconButton, Table, Text, VStack} from "@chakra-ui/react";
 import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
 import {LuFileEdit, LuTrash2, LuUser} from "react-icons/lu";
 import {useNavigate} from "react-router";
+import {
+    DialogActionTrigger,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
+    DialogTrigger
+} from "../ui/dialog.jsx";
+import {Button} from "../ui/button.jsx";
 
 const Patients = () => {
 
+    // auth, navigate
     const {logout} = useAuth();
+    const navigate = useNavigate();
+
+    // state
     const [patients, setPatients] = useState([]);
+
+    // pagination
     const [page, setPage] = useState(1);
     const pageSize = 8;
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("http://localhost:8080/api/patients/", {
@@ -32,6 +49,25 @@ const Patients = () => {
             console.log(error.message);
         });
     }, []);
+
+    const deletePatient = (id) => {
+        fetch(`http://localhost:8080/api/patients/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("access")}`,
+            },
+        }).then(response => {
+            if (response.ok) {
+                setPatients(patients.filter(patient => patient.id !== id));
+            } else {
+                throw new Error("Failed to delete patient!");
+            }
+        }).catch(error => {
+            logout();
+            console.log(error.message);
+        })
+    }
 
     return (
         <VStack
@@ -79,19 +115,52 @@ const Patients = () => {
                             <Table.Cell>{patient.birthdate}</Table.Cell>
                             <Table.Cell maxW={"100px"}>
                                 <HStack>
-                                    <IconButton colorPalette={"blue"} size={"xs"} variant={'outline'}
+                                    {/* navigate to examinations */}
+                                    <IconButton
+                                        colorPalette={"blue"} size={"xs"} variant={'outline'}
                                         onClick={() => {
                                             navigate(`/patients/${patient.id}/examinations`);
                                         }}
                                     >
                                         <LuUser/>
                                     </IconButton>
+
+                                    {/* edit patient */}
                                     <IconButton colorPalette={"orange"} size={"xs"} variant={'outline'}>
                                         <LuFileEdit/>
                                     </IconButton>
-                                    <IconButton colorPalette={"red"} size={"xs"} variant={"outline"}>
-                                        <LuTrash2 />
-                                    </IconButton>
+
+                                    {/* delete patient */}
+                                    <DialogRoot role={"alertdialog"}>
+                                        <DialogTrigger asChild>
+                                            <IconButton colorPalette={"red"} size={"xs"} variant={"outline"}>
+                                                <LuTrash2/>
+                                            </IconButton>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Delete patient?</DialogTitle>
+                                            </DialogHeader>
+                                            <DialogBody>
+                                                <Text>
+                                                    Are you sure you want to
+                                                    delete {patient.firstname} {patient.lastname}?
+                                                </Text>
+                                            </DialogBody>
+                                            <DialogFooter>
+                                                <DialogActionTrigger asChild>
+                                                    <Button variant="outline">Cancel</Button>
+                                                </DialogActionTrigger>
+                                                <DialogActionTrigger asChild>
+                                                    <Button colorPalette={"red"} onClick={() => {
+                                                        deletePatient(patient.id);
+                                                    }}>Delete</Button>
+                                                </DialogActionTrigger>
+                                            </DialogFooter>
+                                            <DialogCloseTrigger/>
+                                        </DialogContent>
+                                    </DialogRoot>
+
                                 </HStack>
                             </Table.Cell>
                         </Table.Row>
