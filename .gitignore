@@ -165,3 +165,7 @@ databases/
 
 # folder for storing scans
 uploads/
+
+# model checkpoints and archives
+*.mar
+*.pth
