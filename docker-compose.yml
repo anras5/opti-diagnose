@@ -26,6 +26,17 @@ services:
       postgres:
         condition: service_healthy
 
+  serve:
+    container_name: opti-diagnose-serve
+    image: pytorch/torchserve:latest-cpu
+    ports:
+      - "8081:8080"
+      - "8082:8081"
+      - "8083:8082"
+    volumes:
+      - ./models/model_store:/home/model-server/model-store
+      - ./models/config.properties:/home/model-server/config.properties
+
   postgres:
     container_name: opti-diagnose-postgres
     image: postgres:15.0
