@@ -14,7 +14,11 @@ POSTGRES_PASSWORD=secretpassword
 POSTGRES_DB=optidiagnosedb
 ```
 
-2. Run using Docker Compose:
+2. Download `vgg.mar` model archive file from [releases page](https://github.com/anras5/opti-diagnose/releases)
+
+3. Put the `vgg.mar` file inside `models/model_store` directory
+
+4. Run using Docker Compose:
 
 ```
 docker compose up
@@ -24,22 +28,4 @@ Runs:
 - frontend on `5173`
 - backend on `8080`
 - postgres on `54320`
-
-# Backend
-
-```
-cd backend
-```
-
-## Migrations
-To apply migrations, run:
-
-```
-docker exec opti-diagnose-api uv run optidiagnose/manage.py makemigrations
-docker exec opti-diagnose-api uv run optidiagnose/manage.py migrate
-```
-
-## Formatting
-```
-docker exec opti-diagnose-api uv tool run ruff format
-```
+- pytorch serve on `8081`, `8082`, `8083`

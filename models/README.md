@@ -23,3 +23,9 @@ docker run --rm -it -p 127.0.0.1:8080:8080 \
 -v $(pwd)/config.properties:/home/model-server/config.properties \
  pytorch/torchserve:latest-cpu
 ```
+
+3. Register the model (or add it to the config.properties file)
+
+```shell
+curl -X POST "http://localhost:8081/models?url=vgg.mar&initial_workers=1&synchronous=true"
+```
