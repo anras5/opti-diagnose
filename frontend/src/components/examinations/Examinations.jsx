@@ -1,9 +1,10 @@
 import {useNavigate, useParams} from "react-router";
 import {useEffect, useState} from "react";
-import {Heading, HStack, IconButton, Table, VStack} from "@chakra-ui/react";
+import {Heading, HStack, IconButton, SimpleGrid, Table, VStack} from "@chakra-ui/react";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
-import {LuEye, LuFileEdit, LuTrash2} from "react-icons/lu";
+import {LuCalendar, LuCalendarPlus, LuFileEdit, LuTrash2, LuUser} from "react-icons/lu";
+import {Button} from "../ui/button.jsx";
 
 const Examinations = () => {
 
@@ -67,20 +68,48 @@ const Examinations = () => {
             <Heading size={{base: '2xl', md: '4xl'}} mb={3}>{patient.firstname} {patient.lastname}</Heading>
             <Heading>Examinations</Heading>
 
-            <PaginationRoot
-                count={examinations.length}
-                pageSize={pageSize}
-                page={page}
-                onPageChange={(details) => {
-                    setPage(details.page);
-                }}
-            >
-                <HStack gap={4}>
-                    <PaginationPrevTrigger/>
-                    <PaginationPageText/>
-                    <PaginationNextTrigger/>
-                </HStack>
-            </PaginationRoot>
+            <SimpleGrid columns={3} width={"100%"}>
+                <Button
+                    me={"auto"}
+                    colorPalette={"blue"}
+                    variant={"outline"}
+                    onClick={() => {
+                        navigate("/patients");
+                    }}
+                >
+                    <LuUser/> Patients
+                </Button>
+
+                <PaginationRoot
+                    m={"auto"}
+                    count={examinations.length}
+                    pageSize={pageSize}
+                    page={page}
+                    onPageChange={(details) => {
+                        setPage(details.page);
+                    }}
+                >
+                    <HStack gap={4}>
+                        <PaginationPrevTrigger/>
+                        <PaginationPageText/>
+                        <PaginationNextTrigger/>
+                    </HStack>
+                </PaginationRoot>
+
+                <Button
+                    ms={"auto"}
+                    colorPalette={"teal"}
+                    variant={"outline"}
+                    onClick={() => {
+                        navigate(`/patients/${id}/examinations/new`);
+                    }}
+                >
+                    <LuCalendarPlus/> New Examination
+                </Button>
+
+            </SimpleGrid>
+
+
             <Table.Root
                 colorPalette={"teal"}
                 variant={"outline"}
@@ -107,7 +136,7 @@ const Examinations = () => {
                                             navigate(`/examinations/${examination.id}`);
                                         }}
                                     >
-                                        <LuEye/>
+                                        <LuCalendar/>
                                     </IconButton>
                                     <IconButton colorPalette={"orange"} size={"xs"} variant={'outline'}>
                                         <LuFileEdit/>

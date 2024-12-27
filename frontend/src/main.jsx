@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Examinations from "./components/examinations/Examinations.jsx";
 import PatientNew from "./components/patients/PatientNew.jsx";
 import PatientEdit from "./components/patients/PatientEdit.jsx";
+import ExaminationNew from "./components/examinations/ExaminationsNew.jsx";
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -37,6 +38,11 @@ createRoot(document.getElementById('root')).render(
                         <Route path={"patients/:id/examinations"} element={
                             <ProtectedRoute>
                                 <Examinations/>
+                            </ProtectedRoute>
+                        }/>
+                        <Route path={"patients/:id/examinations/new"} element={
+                            <ProtectedRoute>
+                                <ExaminationNew/>
                             </ProtectedRoute>
                         }/>
                     </Route>
