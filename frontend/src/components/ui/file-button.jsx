@@ -53,7 +53,7 @@ export const FileUploadDropzone = React.forwardRef(
 const FileUploadItem = React.forwardRef(function FileUploadItem(props, ref) {
   const { file, showSize, clearable } = props
   return (
-    <ChakraFileUpload.Item file={file} ref={ref}>
+    <ChakraFileUpload.Item file={file} ref={ref} bgColor={"gray.800"}>
       <ChakraFileUpload.ItemPreview asChild>
         <Icon fontSize='lg' color='fg.muted'>
           <LuFile />

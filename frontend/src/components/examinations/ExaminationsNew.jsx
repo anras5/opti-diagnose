@@ -6,6 +6,7 @@ import {Button} from "../ui/button.jsx";
 import {FileUploadList, FileUploadRoot, FileUploadTrigger} from "../ui/file-button.jsx";
 import {LuUpload} from "react-icons/lu";
 import {useState} from "react";
+import {toaster} from "../ui/toaster.jsx";
 
 const ExaminationNew = () => {
 
@@ -14,18 +15,63 @@ const ExaminationNew = () => {
 
     // state
     const [step, setStep] = useState(0);
+    const [date, setDate] = useState("");
+    const [file, setFile] = useState(null);
+
+    const createExamination = async () => {
+        try {
+            // create examination
+            const response = await fetch(`http://localhost:8080/api/patients/${id}/examinations/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                },
+                body: JSON.stringify({
+                    date: date,
+                    notes: "",
+                    diagnosis: "DME",
+                })
+            });
+            if (!response.ok) throw new Error("Failed to create examination!");
+            const data = await response.json();
+
+            // upload file
+            const formData = new FormData();
+            formData.append("photo", file);
+            const uploadResponse = await fetch(`http://localhost:8080/api/examinations/${data.id}/scans/`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                },
+                body: formData
+            });
+            if (!uploadResponse.ok) throw new Error("Failed to upload file!");
+        } catch (error) {
+            toaster.create({
+                description: error.message,
+                type: "error"
+            });
+        }
+    };
 
 
     const validateStepChange = (details) => {
 
-        const success = true;
-
-        console.log(details);
+        let success = true;
 
         if (details.step === 1) {
-            // validate date and file
-            console.log("validate date and file");
+            if (!date || !file) {
+                success = false;
+                toaster.create({
+                    description: "Fill out all fields!",
+                    type: "error"
+                });
+            } else {
+                createExamination();
+            }
         }
+
         if (details.step === 2) {
             // validate results
             console.log("validate results");
@@ -75,17 +121,29 @@ const ExaminationNew = () => {
                         borderRadius={8}
                     >
                         <Field label={"Date"}>
-                            <Input type={"date"}/>
+                            <Input
+                                type={"date"}
+                                value={date}
+                                onChange={(event) => {
+                                    setDate(event.target.value);
+                                }}
+                            />
                         </Field>
 
                         <Field label={"File"}>
-                            <FileUploadRoot accept={["image/png"]}>
+                            <FileUploadRoot
+                                accept={["image/png", "image/jpg", "image/jpeg"]}
+                                onFileChange={(details) => {
+                                    setFile(details.acceptedFiles[0]);
+                                }}
+                                colorPalette={"teal"}
+                            >
                                 <FileUploadTrigger asChild>
                                     <Button variant="outline" size="sm">
                                         <LuUpload/> Upload file
                                     </Button>
                                 </FileUploadTrigger>
-                                <FileUploadList/>
+                                <FileUploadList showSize={true} clearable={true}/>
                             </FileUploadRoot>
                         </Field>
                     </SimpleGrid>
