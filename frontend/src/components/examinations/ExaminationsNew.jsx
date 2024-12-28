@@ -1,5 +1,16 @@
 import {useNavigate, useParams} from "react-router";
-import {Center, Group, Heading, Image, Input, SimpleGrid, Tabs, VStack} from "@chakra-ui/react";
+import {
+    Center,
+    createListCollection,
+    Group,
+    Heading,
+    Image,
+    Input,
+    SimpleGrid,
+    Tabs,
+    Textarea,
+    VStack
+} from "@chakra-ui/react";
 import {Field} from "../ui/field.jsx";
 import {StepsContent, StepsItem, StepsList, StepsNextTrigger, StepsPrevTrigger, StepsRoot} from "../ui/steps.jsx";
 import {Button} from "../ui/button.jsx";
@@ -8,11 +19,21 @@ import {LuUpload} from "react-icons/lu";
 import {useRef, useState} from "react";
 import {toaster} from "../ui/toaster.jsx";
 import {DataListItem, DataListRoot} from "../ui/data-list.jsx";
+import {SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText} from "../ui/select.jsx";
 
 const ExaminationNew = () => {
 
     const navigate = useNavigate();
     const {id} = useParams();
+    const availableDiagnoses = createListCollection({
+        items: [
+            {label: "CNV", value: "CNV"},
+            {label: "DME", value: "DME"},
+            {label: "DRUSEN", value: "DRUSEN"},
+            {label: "VMT", value: "VMT"},
+            {label: "NORMAL", value: "NORMAL"},
+        ]
+    });
 
     // ref
     const examinationCreated = useRef(false);
@@ -22,9 +43,13 @@ const ExaminationNew = () => {
     // first step
     const [date, setDate] = useState("");
     const [file, setFile] = useState(null);
+    const [examinationId, setExaminationId] = useState(null); // we get examination id from the backend after creating it (createExamination function)
     // second step
     const [scans, setScans] = useState([]);
     const [results, setResults] = useState({}); // {scan_id: [result1, result2, ...]}
+    // third step
+    const [diagnosis, setDiagnosis] = useState("");
+    const [notes, setNotes] = useState("");
 
     const createExamination = async () => {
         try {
@@ -41,6 +66,7 @@ const ExaminationNew = () => {
             });
             if (!response.ok) throw new Error("Failed to create examination!");
             const data = await response.json();
+            setExaminationId(data.id);
 
             // upload file
             const formData = new FormData();
@@ -64,7 +90,6 @@ const ExaminationNew = () => {
         examinationCreated.current = true;
     };
 
-
     const validateStepChange = (details) => {
 
         let success = true;
@@ -85,8 +110,38 @@ const ExaminationNew = () => {
 
         // STEP 3
         if (details.step === 3) {
-            // validate diagnosis
-            console.log("validate diagnosis");
+            if (!diagnosis) {
+                success = false;
+                toaster.create({
+                    description: "Provide your diagnosis!",
+                    type: "error"
+                });
+            } else {
+                // update the examination
+                fetch(`http://localhost:8080/api/examinations/${examinationId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                    },
+                    body: JSON.stringify({
+                        diagnosis: diagnosis,
+                        notes: notes,
+                    })
+                }).then(response => {
+                    if (!response.ok) throw new Error("Failed to update examination!");
+                    toaster.create({
+                        description: "Examination created successfully!",
+                        type: "success"
+                    });
+                    navigate(`/patients/${id}/examinations`);
+                }).catch(error => {
+                    toaster.create({
+                        description: error.message,
+                        type: "error"
+                    });
+                })
+            }
         }
 
 
@@ -124,24 +179,49 @@ const ExaminationNew = () => {
                 colorPalette={"teal"}
                 onStepChange={validateStepChange}
             >
+
+                <SimpleGrid columns={2}>
+                    <Button variant="outline" size="sm" mr={"auto"} colorPalette={"gray"}
+                            onClick={() => navigate(`/patients/${id}/examinations`)}>
+                        Back to examinations
+                    </Button>
+
+                    <Group ml={"auto"}>
+                        <StepsPrevTrigger asChild>
+                            <Button variant="outline" size="sm">
+                                Prev
+                            </Button>
+                        </StepsPrevTrigger>
+                        <StepsNextTrigger asChild>
+                            {step < 2 ? (
+                                <Button variant="outline" size="sm">
+                                    Next
+                                </Button>
+                            ) : (
+                                <Button size="sm">
+                                    Finish
+                                </Button>
+                            )}
+                        </StepsNextTrigger>
+                    </Group>
+                </SimpleGrid>
+
                 <StepsList>
                     <StepsItem index={0} title="Date & File" description={"Upload files"}/>
                     <StepsItem index={1} title="Results" description={"View results from AI"}/>
                     <StepsItem index={2} title="Confirm Diagnosis" description={"Decide on the final diagnosis"}/>
                 </StepsList>
 
-                <StepsContent index={0}>
+                <StepsContent index={0} borderWidth={2} borderRadius={8} mt={2}>
                     <SimpleGrid
                         as={"form"}
+                        columns={2}
                         width={"100%"}
                         p={5}
-                        mt={6}
-                        columns={2}
+                        mt={2}
                         gap={{base: "24px", md: "40px"}}
-                        borderWidth={2}
-                        borderRadius={8}
                     >
-                        <Field label={"Date"}>
+                        <Field label={"Date"} required>
                             <Input
                                 type={"date"}
                                 value={date}
@@ -151,7 +231,7 @@ const ExaminationNew = () => {
                             />
                         </Field>
 
-                        <Field label={"File"}>
+                        <Field label={"File"} required>
                             <FileUploadRoot
                                 accept={["image/png", "image/jpg", "image/jpeg"]}
                                 onFileChange={(details) => {
@@ -170,13 +250,11 @@ const ExaminationNew = () => {
                     </SimpleGrid>
                 </StepsContent>
                 <StepsContent index={1} borderWidth={2} borderRadius={8} mt={2} py={5}>
-
                     {Object.keys(results).length === 0 &&
                         <Center>
                             <Button onClick={getResults}>Get Results</Button>
                         </Center>
                     }
-
                     <SimpleGrid
                         columns={2}
                         width={"100%"}
@@ -215,35 +293,40 @@ const ExaminationNew = () => {
                                     }
                                 </>
                             )
-
-
                         })}
-
-
                     </SimpleGrid>
-
                 </StepsContent>
-                <StepsContent index={2}>
-                    Confirm diagnosis
+                <StepsContent index={2} borderWidth={2} borderRadius={8} mt={2}>
+                    <SimpleGrid
+                        columns={2}
+                        width={"100%"}
+                        p={5}
+                        mt={2}
+                        gap={{base: "24px", md: "40px"}}
+                    >
+                        <Field label={"Your diagnosis"} required>
+                            <SelectRoot collection={availableDiagnoses} onValueChange={(details) => {
+                                setDiagnosis(details.value[0])
+                            }}>
+                                <SelectTrigger>
+                                    <SelectValueText placeholder={"Choose diagnosis"}/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableDiagnoses.items.map(diagnosis => (
+                                        <SelectItem key={diagnosis.value}
+                                                    item={diagnosis}>{diagnosis.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </SelectRoot>
+                        </Field>
+                        <Field label={"Your notes"}>
+                            <Textarea onBlur={(e) => setNotes(e.target.value)}/>
+                        </Field>
+                    </SimpleGrid>
                 </StepsContent>
-
-                <Group>
-                    <StepsPrevTrigger asChild>
-                        <Button variant="outline" size="sm">
-                            Prev
-                        </Button>
-                    </StepsPrevTrigger>
-                    <StepsNextTrigger asChild>
-                        <Button variant="outline" size="sm">
-                            Next
-                        </Button>
-                    </StepsNextTrigger>
-                </Group>
             </StepsRoot>
-
         </VStack>
-    )
-        ;
+    );
 }
 
 export default ExaminationNew;
