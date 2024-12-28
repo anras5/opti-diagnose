@@ -252,7 +252,7 @@ const ExaminationNew = () => {
                 <StepsContent index={1} borderWidth={2} borderRadius={8} mt={2} py={5}>
                     {Object.keys(results).length === 0 &&
                         <Center>
-                            <Button onClick={getResults}>Get Results</Button>
+                            <Button onClick={getResults}>Get AI Results</Button>
                         </Center>
                     }
                     <SimpleGrid
