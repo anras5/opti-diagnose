@@ -1,22 +1,30 @@
 import {useNavigate, useParams} from "react-router";
-import {Group, Heading, Input, SimpleGrid, VStack} from "@chakra-ui/react";
+import {Center, Group, Heading, Image, Input, SimpleGrid, Tabs, VStack} from "@chakra-ui/react";
 import {Field} from "../ui/field.jsx";
 import {StepsContent, StepsItem, StepsList, StepsNextTrigger, StepsPrevTrigger, StepsRoot} from "../ui/steps.jsx";
 import {Button} from "../ui/button.jsx";
 import {FileUploadList, FileUploadRoot, FileUploadTrigger} from "../ui/file-button.jsx";
 import {LuUpload} from "react-icons/lu";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {toaster} from "../ui/toaster.jsx";
+import {DataListItem, DataListRoot} from "../ui/data-list.jsx";
 
 const ExaminationNew = () => {
 
     const navigate = useNavigate();
     const {id} = useParams();
 
+    // ref
+    const examinationCreated = useRef(false);
+
     // state
     const [step, setStep] = useState(0);
+    // first step
     const [date, setDate] = useState("");
     const [file, setFile] = useState(null);
+    // second step
+    const [scans, setScans] = useState([]);
+    const [results, setResults] = useState({}); // {scan_id: [result1, result2, ...]}
 
     const createExamination = async () => {
         try {
@@ -29,8 +37,6 @@ const ExaminationNew = () => {
                 },
                 body: JSON.stringify({
                     date: date,
-                    notes: "",
-                    diagnosis: "DME",
                 })
             });
             if (!response.ok) throw new Error("Failed to create examination!");
@@ -47,12 +53,15 @@ const ExaminationNew = () => {
                 body: formData
             });
             if (!uploadResponse.ok) throw new Error("Failed to upload file!");
+            const dataUpload = await uploadResponse.json();
+            setScans(prevScans => [...prevScans, dataUpload]);
         } catch (error) {
             toaster.create({
                 description: error.message,
                 type: "error"
             });
         }
+        examinationCreated.current = true;
     };
 
 
@@ -60,6 +69,7 @@ const ExaminationNew = () => {
 
         let success = true;
 
+        // STEP 1
         if (details.step === 1) {
             if (!date || !file) {
                 success = false;
@@ -68,14 +78,12 @@ const ExaminationNew = () => {
                     type: "error"
                 });
             } else {
-                createExamination();
+                if (!examinationCreated.current)
+                    createExamination();
             }
         }
 
-        if (details.step === 2) {
-            // validate results
-            console.log("validate results");
-        }
+        // STEP 3
         if (details.step === 3) {
             // validate diagnosis
             console.log("validate diagnosis");
@@ -84,6 +92,20 @@ const ExaminationNew = () => {
 
         if (success)
             setStep(details.step);
+    }
+
+    const getResults = async () => {
+        for (const scan of scans) {
+            const response = await fetch(`http://localhost:8080/api/scans/${scan.id}/network-diagnosis/`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                },
+            });
+            if (!response.ok) throw new Error("Failed to get results!");
+            const data = await response.json();
+            setResults(prevResults => ({...prevResults, [scan.id]: [...(prevResults[scan.id] || []), data]}));
+        }
     }
 
 
@@ -109,7 +131,6 @@ const ExaminationNew = () => {
                 </StepsList>
 
                 <StepsContent index={0}>
-
                     <SimpleGrid
                         as={"form"}
                         width={"100%"}
@@ -147,10 +168,60 @@ const ExaminationNew = () => {
                             </FileUploadRoot>
                         </Field>
                     </SimpleGrid>
-
                 </StepsContent>
-                <StepsContent index={1}>
-                    Results from AI
+                <StepsContent index={1} borderWidth={2} borderRadius={8} mt={2} py={5}>
+
+                    {Object.keys(results).length === 0 &&
+                        <Center>
+                            <Button onClick={getResults}>Get Results</Button>
+                        </Center>
+                    }
+
+                    <SimpleGrid
+                        columns={2}
+                        width={"100%"}
+                        p={5}
+                        mt={2}
+                        gap={{base: "24px", md: "40px"}}
+                    >
+                        {scans.map(scan => {
+                            let network_names = results[scan.id] ? [...new Set(results[scan.id].map(result => result.network_name))] : [];
+                            return (
+                                <>
+                                    <Image src={scan.photo} alt={scan.id} key={scan.id} m={"auto"}/>
+                                    {results && results[scan.id] &&
+                                        <Tabs.Root defaultValue={"VGG16"} variant={"subtle"}>
+                                            <Tabs.List>
+                                                {network_names.map(network_name => (
+                                                    <Tabs.Trigger key={network_name}>{network_name}</Tabs.Trigger>
+                                                ))}
+                                                <Tabs.Indicator/>
+                                            </Tabs.List>
+                                            {network_names.map(network_name => (
+                                                <Tabs.Content key={network_name}>
+                                                    <DataListRoot orientation={"horizontal"} size={"lg"}
+                                                                  divideY={"1px"}>
+                                                        {results[scan.id].filter(result => result.network_name === network_name).map(result => (
+                                                            <DataListItem
+                                                                key={result.id}
+                                                                label={result.diagnosis}
+                                                                value={result.confidence}
+                                                            />
+                                                        ))}
+                                                    </DataListRoot>
+                                                </Tabs.Content>
+                                            ))}
+                                        </Tabs.Root>
+                                    }
+                                </>
+                            )
+
+
+                        })}
+
+
+                    </SimpleGrid>
+
                 </StepsContent>
                 <StepsContent index={2}>
                     Confirm diagnosis
@@ -171,7 +242,8 @@ const ExaminationNew = () => {
             </StepsRoot>
 
         </VStack>
-    );
+    )
+        ;
 }
 
 export default ExaminationNew;
