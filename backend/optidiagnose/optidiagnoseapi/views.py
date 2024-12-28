@@ -47,15 +47,18 @@ class ExaminationDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ScanUploadView(viewsets.ModelViewSet):
-    queryset = Scan.objects.all()
     serializer_class = ScanSerializer
 
     def perform_create(self, serializer):
         examination = get_object_or_404(Examination, pk=self.kwargs.get("examination_id"))
         serializer.save(examination=examination)
 
+    def get_queryset(self):
+        examination = get_object_or_404(Examination, pk=self.kwargs.get("examination_id"))
+        return Scan.objects.filter(examination=examination)
 
-class ScanDetail(generics.RetrieveUpdateDestroyAPIView):
+
+class ScanDetail(generics.DestroyAPIView):
     serializer_class = ScanSerializer
     queryset = Scan.objects.all()
     lookup_url_kwarg = "scan_id"

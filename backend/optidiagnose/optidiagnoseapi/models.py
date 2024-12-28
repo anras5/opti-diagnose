@@ -32,6 +32,8 @@ class Examination(UUIDModel):
     diagnosis = models.CharField(
         max_length=10,
         choices=Diagnosis.choices,
+        blank=True,
+        null=True,
         help_text="Diagnosis of the examination",
     )
     notes = models.TextField(blank=True, null=True, help_text="Notes for the examination")
@@ -51,8 +53,11 @@ class Scan(UUIDModel):
 class NetworkDiagnosis(UUIDModel):
     network_name = models.CharField(max_length=255, help_text="Name of the neural network")
     diagnosis = models.CharField(max_length=10, choices=Diagnosis.choices, help_text="Diagnosis from the network")
-    examination = models.ForeignKey(
-        Examination,
+    confidence = models.FloatField(default=0.0, help_text="Confidence of the diagnosis [0-100]")
+    scan = models.ForeignKey(
+        Scan,
+        null=True,
+        blank=True,
         on_delete=models.CASCADE,
-        help_text="Examination of the network diagnosis",
+        help_text="Neural network diagnosis of the scan",
     )
