@@ -1,7 +1,11 @@
+import requests
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
+from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Patient, Examination, Scan, NetworkDiagnosis
 from .permissions import IsSuperUser
@@ -46,7 +50,7 @@ class ExaminationDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = "examination_id"
 
 
-class ScanUploadView(viewsets.ModelViewSet):
+class ScanListUpload(viewsets.ModelViewSet):
     serializer_class = ScanSerializer
 
     def perform_create(self, serializer):
@@ -58,18 +62,61 @@ class ScanUploadView(viewsets.ModelViewSet):
         return Scan.objects.filter(examination=examination)
 
 
-class ScanDetail(generics.DestroyAPIView):
+class ScanRetrieveDestroy(generics.RetrieveDestroyAPIView):
     serializer_class = ScanSerializer
     queryset = Scan.objects.all()
     lookup_url_kwarg = "scan_id"
 
 
-class NetworkDiagnosisListCreate(generics.ListCreateAPIView):
+class NetworkDiagnosisListCreate(APIView):
+    def get(self, request, scan_id):
+        scan = get_object_or_404(Scan, pk=scan_id)
+        network_diagnoses = NetworkDiagnosis.objects.filter(scan=scan)
+        serializer = NetworkDiagnosisSerializer(network_diagnoses, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, scan_id):
+        """
+        Handle POST request to create a new NetworkDiagnosis for a given scan.
+
+        This method performs the following steps:
+        1. Retrieves the Scan object based on the provided scan_id.
+        2. Deletes all previous NetworkDiagnosis objects associated with the scan.
+        3. Sends the scan image to the PyTorch Serve for diagnosis.
+        4. Creates a new NetworkDiagnosis object based on the response from the PyTorch Serve.
+
+        Args:
+            request (Request): The HTTP request object.
+            scan_id (int): The ID of the scan for which the diagnosis is to be created.
+
+        Returns:
+            Response: A Response object containing the serialized NetworkDiagnosis data or an error message.
+        """
+        # Get the scan object
+        scan = get_object_or_404(Scan, pk=scan_id)
+
+        # Delete all previous network diagnosis for this scan
+        NetworkDiagnosis.objects.filter(scan=scan).delete()
+
+        # Send the scan to the PyTorch Serve
+        with open(scan.photo.path, "rb") as scan_file:
+            response = requests.post(
+                "http://serve:8080/predictions/vgg",
+                data=scan_file,
+            )
+        if response.status_code != 200:
+            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+
+        # Use the response to create a new NetworkDiagnosis object
+        diagnosis_data = {"network_name": "VGG16", "diagnosis": response.text, "confidence": 100.0}
+        serializer = NetworkDiagnosisSerializer(data=diagnosis_data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save(scan=scan)
+        return Response(serializer.data)
+
+
+class NetworkDiagnosisRetrieve(generics.RetrieveAPIView):
     serializer_class = NetworkDiagnosisSerializer
     queryset = NetworkDiagnosis.objects.all()
-
-
-class NetworkDiagnosisDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = NetworkDiagnosisSerializer
-    queryset = Scan.objects.all()
     lookup_url_kwarg = "network_diagnosis_id"

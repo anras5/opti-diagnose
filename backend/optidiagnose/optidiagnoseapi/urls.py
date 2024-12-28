@@ -10,11 +10,11 @@ from .views import (
     PatientDetail,
     ExaminationListCreate,
     ExaminationDetail,
-    ScanDetail,
     NetworkDiagnosisListCreate,
-    NetworkDiagnosisDetail,
+    NetworkDiagnosisRetrieve,
     UserCreate,
-    ScanUploadView,
+    ScanListUpload,
+    ScanRetrieveDestroy,
 )
 
 urlpatterns = [
@@ -25,13 +25,21 @@ urlpatterns = [
     path("patients/<uuid:patient_id>", PatientDetail.as_view(), name="patient_detail"),
     path("patients/<uuid:patient_id>/examinations/", ExaminationListCreate.as_view(), name="examination_list_create"),
     path("examinations/<uuid:examination_id>", ExaminationDetail.as_view(), name="examination_detail"),
-    path("examinations/<uuid:examination_id>/scans/", ScanUploadView.as_view({"post": "create", "get": "list"}), name="scan_upload"),
-    path("scans/<uuid:scan_id>", ScanDetail.as_view(), name="scan_detail"),
-    path("network-diagnosis/", NetworkDiagnosisListCreate.as_view(), name="network_diagnosis_list_create"),
+    path(
+        "examinations/<uuid:examination_id>/scans/",
+        ScanListUpload.as_view({"get": "list", "post": "create"}),
+        name="scan_list_upload",
+    ),
+    path("scans/<uuid:scan_id>", ScanRetrieveDestroy.as_view(), name="scan_retrieve_destroy"),
+    path(
+        "scans/<uuid:scan_id>/network-diagnosis/",
+        NetworkDiagnosisListCreate.as_view(),
+        name="network_diagnosis_list_create",
+    ),
     path(
         "network-diagnosis/<uuid:network_diagnosis_id>",
-        NetworkDiagnosisDetail.as_view(),
-        name="network_diagnosis_detail",
+        NetworkDiagnosisRetrieve.as_view(),
+        name="network_diagnosis_retrieve",
     ),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("schema/swagger-ui/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
