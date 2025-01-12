@@ -90,6 +90,34 @@ const ExaminationNew = () => {
         examinationCreated.current = true;
     };
 
+    const updateExamination = async () => {
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/examinations/${examinationId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("access")}`,
+                },
+                body: JSON.stringify({
+                    diagnosis: diagnosis,
+                    notes: notes,
+                })
+            });
+            if (!response.ok) throw new Error("Failed to update examination!");
+            toaster.create({
+                description: "Examination created successfully!",
+                type: "success"
+            });
+            navigate(`/patients/${id}/examinations`);
+        } catch (error) {
+            toaster.create({
+                description: error.message,
+                type: "error"
+            });
+        }
+    }
+
     const validateStepChange = (details) => {
 
         let success = true;
@@ -117,30 +145,7 @@ const ExaminationNew = () => {
                     type: "error"
                 });
             } else {
-                // update the examination
-                fetch(`http://localhost:8080/api/examinations/${examinationId}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("access")}`,
-                    },
-                    body: JSON.stringify({
-                        diagnosis: diagnosis,
-                        notes: notes,
-                    })
-                }).then(response => {
-                    if (!response.ok) throw new Error("Failed to update examination!");
-                    toaster.create({
-                        description: "Examination created successfully!",
-                        type: "success"
-                    });
-                    navigate(`/patients/${id}/examinations`);
-                }).catch(error => {
-                    toaster.create({
-                        description: error.message,
-                        type: "error"
-                    });
-                })
+                updateExamination();
             }
         }
 
