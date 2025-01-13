@@ -37,11 +37,14 @@ class PatientDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ExaminationListCreate(generics.ListCreateAPIView):
     serializer_class = ExaminationSerializer
-    queryset = Examination.objects.all()
 
     def perform_create(self, serializer):
         patient = get_object_or_404(Patient, pk=self.kwargs.get("patient_id"))
         serializer.save(patient=patient)
+
+    def get_queryset(self):
+        patient = get_object_or_404(Patient, pk=self.kwargs.get("patient_id"))
+        return Examination.objects.filter(patient=patient)
 
 
 class ExaminationDetail(generics.RetrieveUpdateDestroyAPIView):
