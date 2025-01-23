@@ -1,15 +1,15 @@
 import torch
+import torch.nn.functional as F
 from torchvision import transforms
 from ts.torch_handler.image_classifier import ImageClassifier
-import torch.nn.functional as F
 
 
 class VGGHandler(ImageClassifier):
-
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
     image_processing = transforms.Compose([
         transforms.Resize((224, 224)),
+        transforms.Lambda(lambda img: img.convert("RGB") if img.mode != "RGB" else img),
         transforms.ToTensor(),
         transforms.Normalize(mean, std)
     ])
