@@ -18,8 +18,8 @@ import {FileUploadList, FileUploadRoot, FileUploadTrigger} from "../ui/file-butt
 import {LuUpload} from "react-icons/lu";
 import {useRef, useState} from "react";
 import {toaster} from "../ui/toaster.jsx";
-import {DataListItem, DataListRoot} from "../ui/data-list.jsx";
 import {SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText} from "../ui/select.jsx";
+import {Bar, BarChart, CartesianGrid, XAxis, YAxis} from "recharts";
 
 const ExaminationNew = () => {
 
@@ -164,7 +164,10 @@ const ExaminationNew = () => {
             });
             if (!response.ok) throw new Error("Failed to get results!");
             const data = await response.json();
-            setResults(prevResults => ({...prevResults, [scan.id]: [...(prevResults[scan.id] || []), data]}));
+            setResults(prevResults => ({
+                ...prevResults,
+                [scan.id]: [...(prevResults[scan.id] || []), ...data]
+            }));
         }
     }
 
@@ -280,20 +283,29 @@ const ExaminationNew = () => {
                                                 ))}
                                                 <Tabs.Indicator/>
                                             </Tabs.List>
-                                            {network_names.map(network_name => (
-                                                <Tabs.Content key={network_name}>
-                                                    <DataListRoot orientation={"horizontal"} size={"lg"}
-                                                                  divideY={"1px"}>
-                                                        {results[scan.id].filter(result => result.network_name === network_name).map(result => (
-                                                            <DataListItem
-                                                                key={result.id}
-                                                                label={result.diagnosis}
-                                                                value={result.confidence}
-                                                            />
-                                                        ))}
-                                                    </DataListRoot>
-                                                </Tabs.Content>
-                                            ))}
+                                            {network_names.map(network_name => {
+                                                const data = results[scan.id].filter(result => result.network_name === network_name).map(result => (
+                                                    {name: result.diagnosis, confidence: result.confidence}
+                                                ));
+                                                return (
+                                                    <Tabs.Content key={network_name}>
+                                                        <BarChart
+                                                            width={500}
+                                                            height={300}
+                                                            data={data}
+                                                            margin={{
+                                                                top: 5, right: 30, bottom: 5,
+                                                            }}
+                                                        >
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+                                                            <XAxis dataKey={"name"}/>
+                                                            <YAxis/>
+                                                            <Bar dataKey="confidence" fill="#14b8a6"/>
+                                                        </BarChart>
+                                                    </Tabs.Content>
+                                                )
+
+                                            })}
                                         </Tabs.Root>
                                     }
                                 </>

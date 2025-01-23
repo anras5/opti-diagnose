@@ -1,6 +1,7 @@
 import torch
 from torchvision import transforms
 from ts.torch_handler.image_classifier import ImageClassifier
+import torch.nn.functional as F
 
 
 class VGGHandler(ImageClassifier):
@@ -13,6 +14,11 @@ class VGGHandler(ImageClassifier):
         class_labels = ["CNV", "DME", "DRUSEN", "NORMAL", "VMT"]
         predictions = []
         for output in data:
-            _, predicted = torch.max(output, 0)
-            predictions.append(class_labels[predicted])
+            probabilities = F.softmax(output, dim=0)  # Apply softmax to get probabilities
+            confidence, predicted = torch.max(probabilities, 0)  # Get the max probability and class index
+            predictions.append({
+                "label": class_labels[predicted],
+                "confidence": confidence.item(),
+                "probabilities": {label: probabilities[i].item() for i, label in enumerate(class_labels)}
+            })
         return predictions

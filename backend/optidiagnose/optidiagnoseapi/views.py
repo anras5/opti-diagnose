@@ -1,3 +1,5 @@
+import json
+
 import requests
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -111,11 +113,19 @@ class NetworkDiagnosisListCreate(APIView):
             return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
 
         # Use the response to create a new NetworkDiagnosis object
-        diagnosis_data = {"network_name": "VGG16", "diagnosis": response.text, "confidence": 100.0}
-        serializer = NetworkDiagnosisSerializer(data=diagnosis_data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save(scan=scan)
+        network_response = json.loads(response.text)
+        for class_, confidence in network_response["probabilities"].items():
+            diagnosis_data = {
+                "network_name": "VGG16",
+                "diagnosis": class_,
+                "confidence": confidence,
+            }
+            serializer = NetworkDiagnosisSerializer(data=diagnosis_data)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save(scan=scan)
+
+        serializer = NetworkDiagnosisSerializer(NetworkDiagnosis.objects.filter(scan=scan), many=True)
         return Response(serializer.data)
 
 
