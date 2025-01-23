@@ -103,27 +103,29 @@ class NetworkDiagnosisListCreate(APIView):
         # Delete all previous network diagnosis for this scan
         NetworkDiagnosis.objects.filter(scan=scan).delete()
 
-        # Send the scan to the PyTorch Serve
-        with open(scan.photo.path, "rb") as scan_file:
-            response = requests.post(
-                "http://serve:8080/predictions/vgg",
-                data=scan_file,
-            )
-        if response.status_code != 200:
-            return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
+        networks = ["vgg16", "mobilenetv3", "vit"]
+        for network in networks:
+            # Send the scan to the PyTorch Serve
+            with open(scan.photo.path, "rb") as scan_file:
+                response = requests.post(
+                    f"http://serve:8080/predictions/{network}",
+                    data=scan_file,
+                )
+            if response.status_code != 200:
+                return Response(response.json(), status=status.HTTP_400_BAD_REQUEST)
 
-        # Use the response to create a new NetworkDiagnosis object
-        network_response = json.loads(response.text)
-        for class_, confidence in network_response["probabilities"].items():
-            diagnosis_data = {
-                "network_name": "VGG16",
-                "diagnosis": class_,
-                "confidence": confidence,
-            }
-            serializer = NetworkDiagnosisSerializer(data=diagnosis_data)
-            if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            serializer.save(scan=scan)
+            # Use the response to create a new NetworkDiagnosis object
+            network_response = json.loads(response.text)
+            for class_, confidence in network_response["probabilities"].items():
+                diagnosis_data = {
+                    "network_name": network,
+                    "diagnosis": class_,
+                    "confidence": confidence,
+                }
+                serializer = NetworkDiagnosisSerializer(data=diagnosis_data)
+                if not serializer.is_valid():
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                serializer.save(scan=scan)
 
         serializer = NetworkDiagnosisSerializer(NetworkDiagnosis.objects.filter(scan=scan), many=True)
         return Response(serializer.data)

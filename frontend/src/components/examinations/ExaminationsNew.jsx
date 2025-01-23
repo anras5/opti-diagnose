@@ -276,35 +276,40 @@ const ExaminationNew = () => {
                                 <>
                                     <Image src={scan.photo} alt={scan.id} key={scan.id} m={"auto"}/>
                                     {results && results[scan.id] &&
-                                        <Tabs.Root defaultValue={"VGG16"} variant={"subtle"}>
+                                        <Tabs.Root variant={"subtle"}>
                                             <Tabs.List>
                                                 {network_names.map(network_name => (
-                                                    <Tabs.Trigger key={network_name}>{network_name}</Tabs.Trigger>
+                                                    <Tabs.Trigger
+                                                        key={network_name}
+                                                        value={network_name}
+                                                    >
+                                                        {network_name}
+                                                    </Tabs.Trigger>
                                                 ))}
                                                 <Tabs.Indicator/>
                                             </Tabs.List>
                                             {network_names.map(network_name => {
                                                 const data = results[scan.id].filter(result => result.network_name === network_name).map(result => (
-                                                    {name: result.diagnosis, confidence: result.confidence}
+                                                    {name: result.diagnosis, confidence: result.confidence * 100}
                                                 ));
                                                 return (
-                                                    <Tabs.Content key={network_name}>
+                                                    <Tabs.Content key={network_name} value={network_name} mt={3}>
+                                                        <Heading ml={14}>Confidence of {network_name}</Heading>
                                                         <BarChart
                                                             width={500}
-                                                            height={300}
+                                                            height={350}
                                                             data={data}
                                                             margin={{
-                                                                top: 5, right: 30, bottom: 5,
+                                                                top: 5, bottom: 5,
                                                             }}
                                                         >
                                                             <CartesianGrid strokeDasharray="3 3" vertical={false}/>
                                                             <XAxis dataKey={"name"}/>
-                                                            <YAxis/>
+                                                            <YAxis tickFormatter={(tick) => `${tick}%`}/>
                                                             <Bar dataKey="confidence" fill="#14b8a6"/>
                                                         </BarChart>
                                                     </Tabs.Content>
                                                 )
-
                                             })}
                                         </Tabs.Root>
                                     }
