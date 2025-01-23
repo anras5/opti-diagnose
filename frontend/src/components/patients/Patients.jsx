@@ -31,7 +31,7 @@ const Patients = () => {
     const pageSize = 8;
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/patients/", {
+        fetch("http://localhost:8088/api/patients/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -51,7 +51,7 @@ const Patients = () => {
     }, []);
 
     const deletePatient = (id) => {
-        fetch(`http://localhost:8080/api/patients/${id}`, {
+        fetch(`http://localhost:8088/api/patients/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

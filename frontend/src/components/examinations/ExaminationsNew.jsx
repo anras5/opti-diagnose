@@ -54,7 +54,7 @@ const ExaminationNew = () => {
     const createExamination = async () => {
         try {
             // create examination
-            const response = await fetch(`http://localhost:8080/api/patients/${id}/examinations/`, {
+            const response = await fetch(`http://localhost:8088/api/patients/${id}/examinations/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const ExaminationNew = () => {
             // upload file
             const formData = new FormData();
             formData.append("photo", file);
-            const uploadResponse = await fetch(`http://localhost:8080/api/examinations/${data.id}/scans/`, {
+            const uploadResponse = await fetch(`http://localhost:8088/api/examinations/${data.id}/scans/`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("access")}`,
@@ -93,7 +93,7 @@ const ExaminationNew = () => {
     const updateExamination = async () => {
 
         try {
-            const response = await fetch(`http://localhost:8080/api/examinations/${examinationId}`, {
+            const response = await fetch(`http://localhost:8088/api/examinations/${examinationId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -156,7 +156,7 @@ const ExaminationNew = () => {
 
     const getResults = async () => {
         for (const scan of scans) {
-            const response = await fetch(`http://localhost:8080/api/scans/${scan.id}/network-diagnosis/`, {
+            const response = await fetch(`http://localhost:8088/api/scans/${scan.id}/network-diagnosis/`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("access")}`,

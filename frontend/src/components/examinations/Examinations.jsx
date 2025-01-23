@@ -22,7 +22,7 @@ const Examinations = () => {
     const pageSize = 8;
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/patients/${id}/examinations/`, {
+        fetch(`http://localhost:8088/api/patients/${id}/examinations/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -40,7 +40,7 @@ const Examinations = () => {
             console.log(error.message);
         });
 
-        fetch(`http://localhost:8080/api/patients/${id}`, {
+        fetch(`http://localhost:8088/api/patients/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

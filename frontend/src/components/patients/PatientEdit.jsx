@@ -23,7 +23,7 @@ const PatientEdit = () => {
             phone: ""
         },
         onSubmit: (values) => {
-            fetch(`http://localhost:8080/api/patients/${id}`, {
+            fetch(`http://localhost:8088/api/patients/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -44,7 +44,7 @@ const PatientEdit = () => {
     })
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/patients/${id}`, {
+        fetch(`http://localhost:8088/api/patients/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

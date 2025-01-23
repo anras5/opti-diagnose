@@ -10,7 +10,7 @@ export const AuthProvider = ({children}) => {
     useEffect(() => {
         const refreshToken = localStorage.getItem("refresh");
         if (refreshToken) {
-            fetch("http://localhost:8080/api/token/refresh/", {
+            fetch("http://localhost:8088/api/token/refresh/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
