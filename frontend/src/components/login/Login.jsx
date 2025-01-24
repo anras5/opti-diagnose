@@ -17,7 +17,7 @@ const Login = () => {
             password: Yup.string().required("Password required!")
         }),
         onSubmit: (values, actions) => {
-            fetch("http://localhost:8080/api/token/", {
+            fetch("http://localhost:8088/api/token/", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(values)

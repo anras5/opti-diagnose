@@ -43,4 +43,4 @@ class ScanSerializer(serializers.ModelSerializer):
 class NetworkDiagnosisSerializer(serializers.ModelSerializer):
     class Meta:
         model = NetworkDiagnosis
-        exclude = ["examination"]
+        exclude = ["scan"]

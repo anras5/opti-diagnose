@@ -19,7 +19,7 @@ const PatientNew = () => {
             phone: ""
         },
         onSubmit: (values) => {
-            fetch("http://localhost:8080/api/patients/", {
+            fetch("http://localhost:8088/api/patients/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "optidiagnoseapi",
     "corsheaders",
     "rest_framework_simplejwt",
-    "drf_spectacular"
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "optidiagnose.urls"
@@ -124,7 +124,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # JWT settings
@@ -135,15 +135,16 @@ SIMPLE_JWT = {
 
 # Root for files
 MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/uploads/"
 
 # DRF Spectacular settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'OptiDiagnose API',
-    'DESCRIPTION': 'API for the OptiDiagnose project',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'SERVE_URLCONF': 'optidiagnose.urls',
-    'SCHEMA_PATH_PREFIX': r'/api/',
+    "TITLE": "OptiDiagnose API",
+    "DESCRIPTION": "API for the OptiDiagnose project",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_URLCONF": "optidiagnose.urls",
+    "SCHEMA_PATH_PREFIX": r"/api/",
 }
 
 # CORS settings

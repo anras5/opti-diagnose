@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {Box, Center, Heading, HStack, IconButton, SimpleGrid, Table, Text, VStack} from "@chakra-ui/react";
+import {Box, Heading, HStack, IconButton, SimpleGrid, Table, Text, VStack} from "@chakra-ui/react";
 import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
 import {LuFileEdit, LuTrash2, LuUser, LuUserPlus} from "react-icons/lu";
 import {useNavigate} from "react-router";
@@ -31,7 +31,7 @@ const Patients = () => {
     const pageSize = 8;
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/patients/", {
+        fetch("http://localhost:8088/api/patients/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -51,7 +51,7 @@ const Patients = () => {
     }, []);
 
     const deletePatient = (id) => {
-        fetch(`http://localhost:8080/api/patients/${id}`, {
+        fetch(`http://localhost:8088/api/patients/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -79,22 +79,21 @@ const Patients = () => {
 
             <SimpleGrid columns={3} width={"100%"}>
                 <Box></Box>
-                <Center>
-                    <PaginationRoot
-                        count={patients.length}
-                        pageSize={pageSize}
-                        page={page}
-                        onPageChange={(details) => {
-                            setPage(details.page);
-                        }}
-                    >
-                        <HStack gap={4}>
-                            <PaginationPrevTrigger/>
-                            <PaginationPageText/>
-                            <PaginationNextTrigger/>
-                        </HStack>
-                    </PaginationRoot>
-                </Center>
+                <PaginationRoot
+                    m={"auto"}
+                    count={patients.length}
+                    pageSize={pageSize}
+                    page={page}
+                    onPageChange={(details) => {
+                        setPage(details.page);
+                    }}
+                >
+                    <HStack gap={4}>
+                        <PaginationPrevTrigger/>
+                        <PaginationPageText/>
+                        <PaginationNextTrigger/>
+                    </HStack>
+                </PaginationRoot>
                 <Button
                     ms={"auto"}
                     colorPalette={"teal"}
@@ -103,7 +102,7 @@ const Patients = () => {
                         navigate("/patients/new");
                     }}
                 >
-                    <LuUserPlus /> New Patient
+                    <LuUserPlus/> New Patient
                 </Button>
             </SimpleGrid>
 
@@ -143,9 +142,9 @@ const Patients = () => {
 
                                     {/* edit patient */}
                                     <IconButton colorPalette={"orange"} size={"xs"} variant={'outline'}
-                                        onClick={() => {
-                                            navigate(`/patients/${patient.id}/edit`);
-                                        }}
+                                                onClick={() => {
+                                                    navigate(`/patients/${patient.id}/edit`);
+                                                }}
                                     >
                                         <LuFileEdit/>
                                     </IconButton>

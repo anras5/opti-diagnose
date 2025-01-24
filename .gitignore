@@ -169,3 +169,4 @@ uploads/
 # model checkpoints and archives
 *.mar
 *.pth
+*.pt
