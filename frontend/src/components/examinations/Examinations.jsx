@@ -128,24 +128,20 @@ const Examinations = () => {
                         <Table.Row key={examination.id}>
                             <Table.Cell>{examination.date}</Table.Cell>
                             <Table.Cell>{examination.diagnosis}</Table.Cell>
-                            <Table.Cell maxW={"100px"}>
+                            <Table.Cell>
                                 <HStack>
                                     <IconButton
                                         colorPalette={"blue"} size={"xs"} variant={'outline'}
                                         onClick={() => {
-                                            navigate(`/examinations/${examination.id}`);
+                                            navigate(`/patients/${id}/examinations/${examination.id}`);
                                         }}
                                     >
                                         <LuCalendar/>
-                                    </IconButton>
-                                    <IconButton colorPalette={"orange"} size={"xs"} variant={'outline'}>
-                                        <LuFileEdit/>
                                     </IconButton>
                                     <IconButton colorPalette={"red"} size={"xs"} variant={"outline"}>
                                         <LuTrash2/>
                                     </IconButton>
                                 </HStack>
-
                             </Table.Cell>
                         </Table.Row>
                     ))}
