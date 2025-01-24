@@ -1,10 +1,21 @@
 import {useNavigate, useParams} from "react-router";
 import {useEffect, useState} from "react";
-import {Heading, HStack, IconButton, SimpleGrid, Table, VStack} from "@chakra-ui/react";
+import {Heading, HStack, IconButton, SimpleGrid, Table, Text, VStack} from "@chakra-ui/react";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
-import {LuCalendar, LuCalendarPlus, LuFileEdit, LuTrash2, LuUser} from "react-icons/lu";
+import {LuCalendar, LuCalendarPlus, LuTrash2, LuUser} from "react-icons/lu";
 import {Button} from "../ui/button.jsx";
+import {
+    DialogActionTrigger,
+    DialogBody,
+    DialogCloseTrigger,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogRoot,
+    DialogTitle,
+    DialogTrigger
+} from "../ui/dialog.jsx";
 
 const Examinations = () => {
 
@@ -58,6 +69,25 @@ const Examinations = () => {
             console.log(error.message);
         });
     }, []);
+
+    const deleteExamination = (id) => {
+        fetch(`http://localhost:8088/api/examinations/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("access")}`,
+            },
+        }).then(response => {
+            if (response.ok) {
+                setExaminations(examinations.filter(examination => examination.id !== id));
+            } else {
+                throw new Error("Failed to delete examination!");
+            }
+        }).catch(error => {
+            logout();
+            console.log(error.message);
+        });
+    }
 
     return (
         <VStack
@@ -130,6 +160,8 @@ const Examinations = () => {
                             <Table.Cell>{examination.diagnosis}</Table.Cell>
                             <Table.Cell>
                                 <HStack>
+
+                                    {/*view examination*/}
                                     <IconButton
                                         colorPalette={"blue"} size={"xs"} variant={'outline'}
                                         onClick={() => {
@@ -138,9 +170,38 @@ const Examinations = () => {
                                     >
                                         <LuCalendar/>
                                     </IconButton>
-                                    <IconButton colorPalette={"red"} size={"xs"} variant={"outline"}>
-                                        <LuTrash2/>
-                                    </IconButton>
+
+                                    {/*delete examination*/}
+                                    <DialogRoot role={"alertdialog"}>
+                                        <DialogTrigger asChild>
+                                            <IconButton colorPalette={"red"} size={"xs"} variant={"outline"}>
+                                                <LuTrash2/>
+                                            </IconButton>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Delete examination?</DialogTitle>
+                                            </DialogHeader>
+                                            <DialogBody>
+                                                <Text>
+                                                    Are you sure you want to
+                                                    delete examination from {examination.date}?
+                                                </Text>
+                                            </DialogBody>
+                                            <DialogFooter>
+                                                <DialogActionTrigger asChild>
+                                                    <Button variant="outline">Cancel</Button>
+                                                </DialogActionTrigger>
+                                                <DialogActionTrigger asChild>
+                                                    <Button colorPalette={"red"} onClick={() => {
+                                                        deleteExamination(examination.id);
+                                                    }}>Delete</Button>
+                                                </DialogActionTrigger>
+                                            </DialogFooter>
+                                            <DialogCloseTrigger/>
+                                        </DialogContent>
+                                    </DialogRoot>
+
                                 </HStack>
                             </Table.Cell>
                         </Table.Row>
