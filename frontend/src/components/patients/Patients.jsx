@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {Box, Heading, HStack, IconButton, SimpleGrid, Table, Text, VStack} from "@chakra-ui/react";
+import {Box, Collapsible, Heading, HStack, IconButton, Input, SimpleGrid, Table, Text, VStack} from "@chakra-ui/react";
 import {PaginationNextTrigger, PaginationPageText, PaginationPrevTrigger, PaginationRoot} from "../ui/pagination.jsx";
-import {LuFileEdit, LuTrash2, LuUser, LuUserPlus} from "react-icons/lu";
+import {LuFileEdit, LuSearch, LuTrash2, LuUser, LuUserPlus} from "react-icons/lu";
 import {useNavigate} from "react-router";
 import {
     DialogActionTrigger,
@@ -25,6 +25,7 @@ const Patients = () => {
 
     // state
     const [patients, setPatients] = useState([]);
+    const [filteredPatients, setFilteredPatients] = useState([]);
 
     // pagination
     const [page, setPage] = useState(1);
@@ -44,6 +45,7 @@ const Patients = () => {
             throw new Error("Failed to fetch patients data!");
         }).then(data => {
             setPatients(data);
+            setFilteredPatients(data);
         }).catch(error => {
             logout();
             console.log(error.message);
@@ -60,6 +62,7 @@ const Patients = () => {
         }).then(response => {
             if (response.ok) {
                 setPatients(patients.filter(patient => patient.id !== id));
+                setFilteredPatients(filteredPatients.filter(patient => patient.id !== id));
             } else {
                 throw new Error("Failed to delete patient!");
             }
@@ -67,6 +70,19 @@ const Patients = () => {
             logout();
             console.log(error.message);
         })
+    }
+
+    const filterPatients = (searchTerm) => {
+        if (searchTerm === "") {
+            setFilteredPatients(patients);
+            return;
+        }
+        const newFilteredPatients = patients.filter(patient =>
+            patient.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            patient.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            patient.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredPatients(newFilteredPatients);
     }
 
     return (
@@ -77,34 +93,51 @@ const Patients = () => {
         >
             <Heading size={{base: '2xl', md: '6xl'}} mb={5}>Patients</Heading>
 
-            <SimpleGrid columns={3} width={"100%"}>
-                <Box></Box>
-                <PaginationRoot
-                    m={"auto"}
-                    count={patients.length}
-                    pageSize={pageSize}
-                    page={page}
-                    onPageChange={(details) => {
-                        setPage(details.page);
-                    }}
-                >
-                    <HStack gap={4}>
-                        <PaginationPrevTrigger/>
-                        <PaginationPageText/>
-                        <PaginationNextTrigger/>
-                    </HStack>
-                </PaginationRoot>
-                <Button
-                    ms={"auto"}
-                    colorPalette={"teal"}
-                    variant={"outline"}
-                    onClick={() => {
-                        navigate("/patients/new");
-                    }}
-                >
-                    <LuUserPlus/> New Patient
-                </Button>
-            </SimpleGrid>
+            <Collapsible.Root width={"100%"}>
+                <SimpleGrid columns={3} width={"100%"}>
+                    <Box></Box>
+                    <PaginationRoot
+                        m={"auto"}
+                        count={filteredPatients.length}
+                        pageSize={pageSize}
+                        page={page}
+                        onPageChange={(details) => {
+                            setPage(details.page);
+                        }}
+                    >
+                        <HStack gap={4}>
+                            <PaginationPrevTrigger/>
+                            <PaginationPageText/>
+                            <PaginationNextTrigger/>
+                        </HStack>
+                    </PaginationRoot>
+                    <Box textAlign={"end"}>
+                        <Collapsible.Trigger>
+                            <Button me={1} variant={"outline"}>
+                                <LuSearch/>
+                            </Button>
+                        </Collapsible.Trigger>
+                        <Button
+                            colorPalette={"teal"}
+                            variant={"outline"}
+                            onClick={() => {
+                                navigate("/patients/new");
+                            }}
+                        >
+                            <LuUserPlus/> New Patient
+                        </Button>
+                    </Box>
+                </SimpleGrid>
+
+                <Collapsible.Content width={"100%"} my={2}>
+                    <Input
+                        colorPalette={"teal"}
+                        placeholder="Search for patient"
+                        onChange={(e) => filterPatients(e.target.value)}
+                    />
+                </Collapsible.Content>
+
+            </Collapsible.Root>
 
             <Table.Root
                 colorPalette={"teal"}
@@ -122,7 +155,7 @@ const Patients = () => {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {patients.slice((page - 1) * pageSize, page * pageSize).map(patient => (
+                    {filteredPatients.slice((page - 1) * pageSize, page * pageSize).map(patient => (
                         <Table.Row key={patient.id}>
                             <Table.Cell>{patient.firstname}</Table.Cell>
                             <Table.Cell>{patient.lastname}</Table.Cell>
@@ -179,7 +212,6 @@ const Patients = () => {
                                             <DialogCloseTrigger/>
                                         </DialogContent>
                                     </DialogRoot>
-
                                 </HStack>
                             </Table.Cell>
                         </Table.Row>
