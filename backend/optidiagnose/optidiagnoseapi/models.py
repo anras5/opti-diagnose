@@ -26,6 +26,9 @@ class Patient(UUIDModel):
     phone = models.CharField(max_length=20, blank=True, null=True, help_text="Phone number of the patient")
     email = models.CharField(max_length=255, blank=True, null=True, help_text="Email of the patient")
 
+    class Meta:
+        ordering = ("lastname", "firstname")
+
 
 class Examination(UUIDModel):
     date = models.DateField(help_text="Date of the examination")
@@ -38,6 +41,9 @@ class Examination(UUIDModel):
     )
     notes = models.TextField(blank=True, null=True, help_text="Notes for the examination")
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, help_text="Patient of the examination")
+
+    class Meta:
+        ordering = ("date",)
 
 
 def upload_to(instance, filename):
