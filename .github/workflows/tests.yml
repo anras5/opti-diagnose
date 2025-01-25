@@ -1,0 +1,35 @@
+name: Run Tests
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up docker compose
+        run: docker compose up -d
+        env:
+          DEBUG: True
+          SECRET_KEY: 'key_for_testing'
+          ALLOWED_HOSTS: *
+          DATABASE_URL: postgres://postgres:postgres@postgres:5432/optidiagnosedb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: optidiagnosedb
+
+      - name: Wait for services to be healthy
+        run: |
+          while ! docker compose exec -T postgres pg_isready -U postgres; do
+            sleep 1
+          done
+
+      - name: Run tests
+        run: docker compose exec api uv run optidiagnose/manage.py test
+
+      - name: Linter
+        run: docker compose exec api uv tool run ruff check
