@@ -37,7 +37,7 @@ jobs:
           done
 
       - name: Run tests
-        run: docker compose exec api uv run optidiagnose/manage.py test
+        run: docker exec opti-diagnose-api uv run optidiagnose/manage.py test optidiagnoseapi.tests
 
       - name: Linter
         run: docker compose exec api uv tool run ruff check

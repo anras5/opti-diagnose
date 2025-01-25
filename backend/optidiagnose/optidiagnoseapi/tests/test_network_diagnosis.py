@@ -1,7 +1,7 @@
 import uuid
 
 from django.contrib.auth.models import User
-from django.test import override_settings, modify_settings
+from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -13,7 +13,7 @@ CLASSES = ["CNV", "DME", "DRUSEN", "NORMAL"]
 FILENAME = "./NORMAL-76914-1.jpeg"
 
 
-@override_settings(MEDIA_ROOT="optidiagnoseapi/tests/assets")
+@override_settings(MEDIA_ROOT="optidiagnose/optidiagnoseapi/tests/assets")
 class NetworkDiagnosisTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_superuser(username="admin", password="admin")
