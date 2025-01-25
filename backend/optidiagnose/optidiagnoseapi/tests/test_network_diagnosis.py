@@ -42,6 +42,7 @@ class NetworkDiagnosisTests(APITestCase):
 
     def test_creates_network_diagnosis_successfully(self):
         response = self.create_network_diagnosis(self.scan.id)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(NetworkDiagnosis.objects.count(), len(NETWORKS) * len(CLASSES))
 
