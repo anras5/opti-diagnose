@@ -1,4 +1,6 @@
+import json
 import uuid
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.test import override_settings
@@ -28,7 +30,18 @@ class NetworkDiagnosisTests(APITestCase):
         self.scan = Scan.objects.create(examination=self.examination, photo=FILENAME)
         self.tokens = self.client.post(reverse("token_obtain_pair"), {"username": "admin", "password": "admin"}).data
 
-    def create_network_diagnosis(self, scan_id):
+    @patch('requests.post')
+    def create_network_diagnosis(self, scan_id, mock_post):
+        mock_response = {
+            "probabilities": {
+                "CNV": 0.9,
+                "DME": 0.05,
+                "DRUSEN": 0.03,
+                "NORMAL": 0.02
+            }
+        }
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.text = json.dumps(mock_response)
         url = reverse("network_diagnosis_list_create", args=[scan_id])
         return self.client.post(url, headers={"Authorization": f"Bearer {self.tokens['access']}"})
 
@@ -42,7 +55,6 @@ class NetworkDiagnosisTests(APITestCase):
 
     def test_creates_network_diagnosis_successfully(self):
         response = self.create_network_diagnosis(self.scan.id)
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(NetworkDiagnosis.objects.count(), len(NETWORKS) * len(CLASSES))
 
