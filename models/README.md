@@ -1,6 +1,6 @@
 # PyTorch Serve Microservice
 
-## Commands to create model
+## Commands to create models
 
 1. Creating model archive
 
@@ -28,6 +28,19 @@ uv run torch-model-archiver \
     --model-file mobilenetv3_large/model.py \
     --export-path model_store \
      -r mobilenetv3_large/requirements.txt
+```
+
+- ViT
+
+```shell
+uv run torch-model-archiver \
+    --model-name vit \
+    --version 1.0 \
+    --serialized-file vit/final_weights.pt \
+    --handler vit/handler.py \
+    --model-file vit/model.py \
+    --export-path model_store \
+     -r vit/requirements.txt
 ```
 
 2. Run a standalone container

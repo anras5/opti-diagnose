@@ -24,8 +24,17 @@ POSTGRES_DB=optidiagnosedb
 docker compose up
 ```
 
+5. If running for the first time:
+
+```shell
+docker exec -it opti-diagnose-api uv run optidiagnose/manage.py createsuperuser
+```
+Username and password specified here can be used to login to the app.
+
+If you would like to add additional users you can do it using `localhost:8088/admin` or using api `localhost:8088/api/user/`
+
 Runs:
 - frontend on `5173`
-- backend on `8088`
+- backend on `8088` (use /admin to access admin panel)
 - postgres on `54320`
 - pytorch serve on `8080`, `8081`, `8082`

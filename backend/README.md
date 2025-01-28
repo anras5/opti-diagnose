@@ -16,3 +16,8 @@ docker exec opti-diagnose-api uv run optidiagnose/manage.py migrate
 ```
 docker exec opti-diagnose-api uv tool run ruff format
 ```
+
+## Testing
+```
+docker exec opti-diagnose-api uv run optidiagnose/manage.py test optidiagnoseapi.tests
+```
