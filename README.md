@@ -1,6 +1,6 @@
 # Opti Diagnose
 
-## Running the project
+# Running the project
 1. Create `.env` file in the root directory and add the following environment variables:
 
 ```
@@ -38,3 +38,11 @@ Runs:
 - backend on `8088` (use /admin to access admin panel)
 - postgres on `54320`
 - pytorch serve on `8080`, `8081`, `8082`
+
+
+# User Interface
+
+![patients](./static/patients.png)
+![create examination step 1](./static/create-examination-1.png)
+![create examination step 2](./static/create-examination-2.png)
+![view examination](./static/view-examination.png)
